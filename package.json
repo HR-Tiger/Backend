@@ -1,0 +1,40 @@
+{
+  "name": "exampleapi",
+  "version": "0.0.1",
+  "description": "",
+  "main": "./src/index.js",
+  "scripts": {
+    "pre-commit-msg": "echo \"Precommit Message...\" && exit 1",
+    "test": "jest",
+    "lint": "eslint",
+    "start": "node ./src/index.js",
+    "start:dev": "nodemon"
+  },
+  "pre-commit": {
+    "run": [
+      "pre-commit-msg",
+      "lint"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HR-Tiger/ExampleAPI.git"
+  },
+  "author": "Marko Turchyn",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HR-Tiger/ExampleAPI/issues"
+  },
+  "homepage": "https://github.com/HR-Tiger/ExampleAPI#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.30.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "jest": "^27.0.6",
+    "nodemon": "^2.0.11",
+    "pre-commit": "^1.2.2"
+  }
+}
