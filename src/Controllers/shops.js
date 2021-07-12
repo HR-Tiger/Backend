@@ -1,13 +1,17 @@
 const db = require('../config/db');
 
 const getShops = (req, res) => {
+  const count = req.body.count || 5;
+  const page = req.body.page || 1;
+
   const sqlQuery = `
   SELECT *
   FROM shops
-  LIMIT 5;
+  LIMIT $1
+  OFFSET $2
   `;
 
-  db.query(sqlQuery, [], (err, data) => {
+  db.query(sqlQuery, [count, page * count], (err, data) => {
     if (err) {
       res.sentStatus(500);
     }
