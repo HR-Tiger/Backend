@@ -4,11 +4,11 @@
   "description": "",
   "main": "./src/index.js",
   "scripts": {
-    "pre-commit-msg": "echo \"Precommit Message...\" && exit 1",
-    "test": "jest",
+    "pre-commit-msg": "echo \"Precommit Message...\"",
+    "test": "jest --coverage",
     "lint": "eslint",
     "start": "node ./src/index.js",
-    "start:dev": "nodemon"
+    "start:dev": "nodemon --watch src ./src/index.js"
   },
   "pre-commit": {
     "run": [
@@ -27,7 +27,8 @@
   },
   "homepage": "https://github.com/HR-Tiger/ExampleAPI#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "swagger-jsdoc": "^6.1.0"
   },
   "devDependencies": {
     "eslint": "^7.30.0",
