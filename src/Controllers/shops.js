@@ -8,8 +8,12 @@ const getShops = (req, res) => {
   SELECT s.*,
     (SELECT json_agg(to_jsonb(p) #- '{photo_id}' #- '{shop_id}')
       FROM shops_photos p
-      WHERE p.shop_id = s.shop_id) AS photos
+      WHERE p.shop_id = s.shop_id) AS photos,
+    AVG(r.rating) as avg_rating
   FROM shops s
+  LEFT JOIN reviews r
+  ON s.shop_id = r.shop_id
+  GROUP BY 1,2,3,4,5,6,7,8,9,10
   LIMIT $1
   OFFSET $2
   `;
@@ -34,9 +38,13 @@ const getShop = (req, res) => {
   SELECT s.*,
     (SELECT json_agg(to_jsonb(p) #- '{photo_id}' #- '{shop_id}')
       FROM shops_photos p
-      WHERE p.shop_id = s.shop_id) AS photos
+      WHERE p.shop_id = s.shop_id) AS photos,
+    AVG(r.rating) as avg_rating
   FROM shops s
+  LEFT JOIN reviews r
+  ON s.shop_id = r.shop_id
   WHERE s.shop_id = $1
+  GROUP BY 1,2,3,4,5,6,7,8,9,10
   LIMIT $2
   OFFSET $3
   ;`;
@@ -90,11 +98,15 @@ const getRecentShops = (req, res) => {
   const page = req.body.page || 0;
 
   const sqlQuery = `
-  SELECT s.*,
-  (SELECT json_agg(to_jsonb(p) #- '{photo_id}' #- '{shop_id}')
-  FROM shops_photos p
+  SELECT
+    s.*,
+    (SELECT json_agg(to_jsonb(p) #- '{photo_id}' #- '{shop_id}') FROM shops_photos p,
+    AVG(r.rating) as avg_rating
   WHERE p.shop_id = s.shop_id) AS photos
   FROM shops s
+  LEFT JOIN reviews r
+  ON s.shop_id = r.shop_id
+  GROUP BY 1,2,3,4,5,6,7,8,9,10
   ORDER BY date DESC
   LIMIT $1
   OFFSET $2
@@ -103,6 +115,7 @@ const getRecentShops = (req, res) => {
 
   db.query(sqlQuery, [count, page * count], (err, data) => {
     if (err) {
+      console.log(err);
       res.sendStatus(500);
     }
     for (let i = 0; i < data.rows.length; i += 1) {
