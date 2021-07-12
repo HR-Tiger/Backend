@@ -5,8 +5,11 @@ const getShops = (req, res) => {
   const page = req.body.page || 0;
 
   const sqlQuery = `
-  SELECT *
-  FROM shops
+  SELECT s.*,
+    (SELECT json_agg(to_jsonb(p) #- '{photo_id}' #- '{shop_id}')
+      FROM shops_photos p
+      WHERE p.shop_id = s.shop_id) AS photos
+  FROM shops s
   LIMIT $1
   OFFSET $2
   `;
@@ -25,7 +28,12 @@ const getHighRatingShops = (req, res) => {
   const page = req.body.page || 0;
 
   const sqlQuery = `
-  SELECT s.*, AVG(r.rating) as avg_rating
+  SELECT
+    s.*,
+    (SELECT json_agg(to_jsonb(p) #- '{photo_id}' #- '{shop_id}')
+      FROM shops_photos p
+      WHERE p.shop_id = s.shop_id) AS photos,
+    AVG(r.rating) as avg_rating
   FROM shops s
   LEFT JOIN reviews r
   ON s.shop_id = r.shop_id
@@ -49,8 +57,11 @@ const getRecentShops = (req, res) => {
   const page = req.body.page || 0;
 
   const sqlQuery = `
-  SELECT *
-  FROM shops
+  SELECT s.*,
+  (SELECT json_agg(to_jsonb(p) #- '{photo_id}' #- '{shop_id}')
+  FROM shops_photos p
+  WHERE p.shop_id = s.shop_id) AS photos
+  FROM shops s
   ORDER BY date DESC
   LIMIT $1
   OFFSET $2

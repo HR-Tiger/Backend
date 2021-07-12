@@ -45,6 +45,8 @@ app.get('/api/highRatingShops', Shops.getHighRatingShops);
 app.get('/api/recentShops', Shops.getRecentShops);
 app.get('/api/shops', Shops.getShops);
 app.get('/api/shops/:id/reviews', Reviews.getReviews);
+app.get('/api/reviews/:review_id', Reviews.getReview);
+app.put('/api/reviews/:review_id', Reviews.updateHelpfulness);
 
 app.get('/', (req, res) => {
   res.status(200).send('Hello');
