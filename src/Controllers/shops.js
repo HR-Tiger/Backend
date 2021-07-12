@@ -18,18 +18,21 @@ const getShops = (req, res) => {
 const getHighRatingShops = (req, res) => {
   const threshold = req.body.rating || 4;
   const count = req.body.count || 5;
+  const page = req.body.page || 1;
 
   const sqlQuery = `
   SELECT s.*, AVG(r.rating) as avg_rating
   FROM shops s
   LEFT JOIN reviews r
   ON s.shop_id = r.shop_id
-  WHERE r.rating >= ${threshold}
+  WHERE r.rating >= $1
   GROUP BY 1,2,3,4,5,6,7,8,9,10
-  LIMIT ${count};
+  LIMIT $2
+  OFFSET $3
+  ;
   `;
 
-  db.query(sqlQuery, [], (err, data) => {
+  db.query(sqlQuery, [threshold, count, page * count], (err, data) => {
     if (err) {
       res.sentStatus(500);
     }
@@ -54,7 +57,9 @@ const getRecentShops = (req, res) => {
     if (err) {
       res.sentStatus(500);
     }
-    console.log('data: ', data);
+    for (let i = 0; i < data.rows.length; i += 1) {
+      data.rows[i].price = 3;
+    }
     res.status(200).json(data.rows);
   });
 };
