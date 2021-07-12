@@ -74,5 +74,5 @@ const updateHelpfulness = async (req, res) => {
 module.exports = {
   getReviews,
   getReview,
-  updateHelpfulness
+  updateHelpfulness,
 };
