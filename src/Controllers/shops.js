@@ -18,6 +18,9 @@ const getShops = (req, res) => {
     if (err) {
       res.sendStatus(500);
     }
+    for (let i = 0; i < data.rows.length; i += 1) {
+      data.rows[i].price = 3;
+    }
     res.status(200).json(data.rows);
   });
 };
@@ -41,6 +44,9 @@ const getShop = (req, res) => {
   db.query(sqlQuery, [shopId, count, page * count], (err, data) => {
     if (err) {
       res.sendStatus(500);
+    }
+    for (let i = 0; i < data.rows.length; i += 1) {
+      data.rows[i].price = 3;
     }
     res.status(200).json(data.rows);
   });
@@ -71,6 +77,9 @@ const getHighRatingShops = (req, res) => {
   db.query(sqlQuery, [threshold, count, page * count], (err, data) => {
     if (err) {
       res.sendStatus(500);
+    }
+    for (let i = 0; i < data.rows.length; i += 1) {
+      data.rows[i].price = 3;
     }
     res.status(200).json(data.rows);
   });
