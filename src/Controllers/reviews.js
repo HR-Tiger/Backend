@@ -6,8 +6,18 @@ const getReviews = (req, res) => {
   const page = req.body.page || 0;
 
   const sqlQuery = `
-  SELECT *
-  FROM reviews
+  SELECT
+    r.*,
+    (SELECT json_agg(to_jsonb(s) #- '{password}')
+    FROM users s
+    WHERE s.user_id = r.user_id)
+    AS user,
+    (SELECT json_agg(to_jsonb(p) #- '{photo_id}' #- '{review_id}')
+      FROM reviews_photos p
+      WHERE p.review_id = r.review_id) AS photos
+  FROM reviews r
+  LEFT JOIN users u
+  ON r.user_id = u.user_id
   WHERE shop_id = $1
   LIMIT $2
   OFFSET $3;
@@ -15,7 +25,7 @@ const getReviews = (req, res) => {
 
   db.query(sqlQuery, [shopId, count, page * count], (err, data) => {
     if (err) {
-      res.sendStatus(500);
+      res.status(500).json(err);
     }
     res.status(200).json(data.rows);
   });

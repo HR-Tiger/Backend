@@ -2,7 +2,7 @@ const db = require('../config/db');
 
 const getShops = (req, res) => {
   const count = req.body.count || 5;
-  const page = req.body.page || 1;
+  const page = req.body.page || 0;
 
   const sqlQuery = `
   SELECT *
@@ -13,7 +13,7 @@ const getShops = (req, res) => {
 
   db.query(sqlQuery, [count, page * count], (err, data) => {
     if (err) {
-      res.sentStatus(500);
+      res.sendStatus(500);
     }
     res.status(200).json(data.rows);
   });
@@ -22,7 +22,7 @@ const getShops = (req, res) => {
 const getHighRatingShops = (req, res) => {
   const threshold = req.body.rating || 4;
   const count = req.body.count || 5;
-  const page = req.body.page || 1;
+  const page = req.body.page || 0;
 
   const sqlQuery = `
   SELECT s.*, AVG(r.rating) as avg_rating
@@ -38,7 +38,7 @@ const getHighRatingShops = (req, res) => {
 
   db.query(sqlQuery, [threshold, count, page * count], (err, data) => {
     if (err) {
-      res.sentStatus(500);
+      res.sendStatus(500);
     }
     res.status(200).json(data.rows);
   });
@@ -46,7 +46,7 @@ const getHighRatingShops = (req, res) => {
 
 const getRecentShops = (req, res) => {
   const count = req.body.count || 5;
-  const page = req.body.page || 1;
+  const page = req.body.page || 0;
 
   const sqlQuery = `
   SELECT *
@@ -59,7 +59,7 @@ const getRecentShops = (req, res) => {
 
   db.query(sqlQuery, [count, page * count], (err, data) => {
     if (err) {
-      res.sentStatus(500);
+      res.sendStatus(500);
     }
     for (let i = 0; i < data.rows.length; i += 1) {
       data.rows[i].price = 3;

@@ -4,6 +4,7 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const app = express();
 
 const Shops = require('./Controllers/shops');
+const Reviews = require('./Controllers/reviews');
 
 // CONSTANTS
 const PORT = process.env.PORT || 3000;
@@ -43,6 +44,7 @@ const swaggerSpec = swaggerJSDoc(options);
 app.get('/api/highRatingShops', Shops.getHighRatingShops);
 app.get('/api/recentShops', Shops.getRecentShops);
 app.get('/api/shops', Shops.getShops);
+app.get('/api/shops/:id/reviews', Reviews.getReviews);
 
 app.get('/', (req, res) => {
   res.status(200).send('Hello');
