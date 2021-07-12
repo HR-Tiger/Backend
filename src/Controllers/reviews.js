@@ -71,8 +71,30 @@ const updateHelpfulness = async (req, res) => {
   });
 };
 
+const getReviewsByUser = (req, res) => {
+  const userId = req.params.id;
+  const sqlQuery = `
+    SELECT
+      *
+    FROM
+      reviews
+    WHERE
+      user_id = $1
+    LIMIT 5;
+  `;
+
+  db.query(sqlQuery, [userId], (err, data) => {
+    if (err) {
+      res.status(500).json(err);
+    }
+
+    res.status(200).json(data.rows);
+  });
+};
+
 module.exports = {
   getReviews,
   getReview,
   updateHelpfulness,
+  getReviewsByUser,
 };
