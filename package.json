@@ -28,6 +28,7 @@
   "homepage": "https://github.com/HR-Tiger/ExampleAPI#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "pg": "^8.6.0",
     "swagger-jsdoc": "^6.1.0"
   },
   "devDependencies": {

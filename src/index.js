@@ -3,6 +3,8 @@ const swaggerJSDoc = require('swagger-jsdoc');
 
 const app = express();
 
+const Shops = require('./Controllers/shops');
+
 // CONSTANTS
 const PORT = process.env.PORT || 3000;
 
@@ -37,6 +39,11 @@ const swaggerSpec = swaggerJSDoc(options);
  *       200:
  *         description: Returns a mysterious string.
  */
+
+app.get('/api/highRatingShops', Shops.getHighRatingShops);
+app.get('/api/recentShops', Shops.getRecentShops);
+app.get('/api/shops', Shops.getShops);
+
 app.get('/', (req, res) => {
   res.status(200).send('Hello');
 });
