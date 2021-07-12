@@ -1,7 +1,7 @@
 const db = require('../config/db');
 
 const getShops = (req, res) => {
-  const count = req.body.count || 5;
+  const count = req.body.count || 9;
   const page = req.body.page || 0;
 
   const sqlQuery = `
@@ -27,7 +27,7 @@ const getShops = (req, res) => {
 
 const getShop = (req, res) => {
   const shopId = req.params.id;
-  const count = req.body.count || 5;
+  const count = req.body.count || 9;
   const page = req.body.page || 0;
 
   const sqlQuery = `
@@ -54,7 +54,7 @@ const getShop = (req, res) => {
 
 const getHighRatingShops = (req, res) => {
   const threshold = req.body.rating || 4;
-  const count = req.body.count || 5;
+  const count = req.body.count || 9;
   const page = req.body.page || 0;
 
   const sqlQuery = `
@@ -86,7 +86,7 @@ const getHighRatingShops = (req, res) => {
 };
 
 const getRecentShops = (req, res) => {
-  const count = req.body.count || 5;
+  const count = req.body.count || 9;
   const page = req.body.page || 0;
 
   const sqlQuery = `
