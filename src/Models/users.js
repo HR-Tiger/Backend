@@ -32,9 +32,10 @@ const checkEmailOrUsernameSqlQuery = `
 `;
 
 const findOneByIdSQLQuery = `
-  SELECT *
+  SELECT
+    json_agg(json_build_object('user_id', u.user_id))
   FROM
-    users
+    users u
   WHERE
     user_id = $1
 ;
@@ -95,7 +96,7 @@ const findOneById = (id) => new Promise((resolve, reject) => {
     if (err) {
       reject(err);
     }
-    resolve(data.rows[0]);
+    resolve(data.rows[0]['json_agg'][0]);
   });
 });
 
