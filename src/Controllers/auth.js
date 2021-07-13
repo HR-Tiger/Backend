@@ -1,66 +1,20 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
-const passportJWT = require('passport-jwt');
-const LocalStrategy = require('passport-local').Strategy;
 const Users = require('../Models/users');
 
-const ExtractJWT = passportJWT.ExtractJwt;
-const JWTStrategy = passportJWT.Strategy;
-
-passport.use(
-  new JWTStrategy({
-    jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-    secretOrKey: 'your_jwt_secret',
-  },
-  (jwtPayload, cb) => Users.findOneById(jwtPayload.id)
-    .then((user) => cb(null, user))
-    .catch((err) => cb(err)),
-  )
-);
-
-passport.use(new LocalStrategy({
-  usernameField: 'username',
-  passwordField: 'password',
-}, (username, password, cb) => {
-  Users.findOne(username)
-    .then((user) => {
-      if (!user) {
-        return cb(null, false, {
-          message: 'Incorrect email or password.',
-        });
-      } else {
-        bcrypt.compare(password, user.password, (err, result) => {
-          if (err || !result) {
-            return cb(null, false, {
-              message: 'Incorrect email or password.',
-            });
-          } else if (result) {
-            return cb(null, user, {
-              message: 'Logged In Successfully',
-            });
-          }
-        });
-      }
-    })
-    .catch((err) => {
-      return cb(err);
-    });
-  }),
-);
-
-const login = (req, res, next) => {
-  // console.log('login');
+const login = (req, res) => {
   passport.authenticate(
     'local',
     {
       session: false,
     },
     (err, user, info) => {
-      // console.log('login call');
       if (err || !user) {
+        console.log('auth.js', err, user);
         res.status(400).json({
           message: info ? info.message : 'Login failed',
+          msg: err,
           user: user,
         });
       } else {
@@ -69,7 +23,7 @@ const login = (req, res, next) => {
             res.status(403).send(err);
           } else {
             const token = jwt.sign(user, 'secret');
-            res.status(200).json({ user, token });
+            res.status(200).json({ token });
           }
         });
       }
@@ -93,6 +47,7 @@ const register = (req, res) => {
           res.status(418).json({
             msg: 'Username or email exists',
           });
+          return;
         } else {
           bcrypt.genSalt(10, (err, salt) => {
             if (err) {

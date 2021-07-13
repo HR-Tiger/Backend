@@ -31,13 +31,22 @@ const checkEmailOrUsernameSqlQuery = `
     username = $1 OR email = $2;
 `;
 
+const findOneByIdSQLQuery = `
+  SELECT *
+  FROM
+    users
+  WHERE
+    user_id = $1
+;
+`;
+
 const createUser = (
-email,
-username,
-hash,
-salt,
-firstName,
-lastName,
+  email,
+  username,
+  hash,
+  salt,
+  firstName,
+  lastName,
 ) => new Promise((resolve, reject) => {
   db.query(createUserSqlQuery,
     [
@@ -48,11 +57,11 @@ lastName,
       firstName,
       lastName,
     ], (err, data) => {
-    if (err) {
-      reject(err);
-    }
-    resolve(data);
-  });
+      if (err) {
+        reject(err);
+      }
+      resolve(data);
+    });
 });
 
 const checkEmailOrUsername = (values) => new Promise((resolve, reject) => {
@@ -66,7 +75,8 @@ const checkEmailOrUsername = (values) => new Promise((resolve, reject) => {
 
 const findOne = (username) => new Promise((resolve, reject) => {
   db.query(`
-      SELECT *
+      SELECT
+        *
       FROM
         users
       WHERE
@@ -76,7 +86,15 @@ const findOne = (username) => new Promise((resolve, reject) => {
     if (err) {
       reject(err);
     }
-    // console.log(data.rows);
+    resolve(data.rows[0]);
+  });
+});
+
+const findOneById = (id) => new Promise((resolve, reject) => {
+  db.query(findOneByIdSQLQuery, [id], (err, data) => {
+    if (err) {
+      reject(err);
+    }
     resolve(data.rows[0]);
   });
 });
@@ -85,4 +103,5 @@ module.exports = {
   createUser,
   checkEmailOrUsername,
   findOne,
+  findOneById,
 };
