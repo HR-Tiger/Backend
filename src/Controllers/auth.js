@@ -1,35 +1,78 @@
-const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-
+const passport = require('passport');
+const passportJWT = require('passport-jwt');
+const LocalStrategy = require('passport-local').Strategy;
 const Users = require('../Models/users');
-// const login = (req, res, next) => {
-//   passport.authenticate('local',
-//     {});
-// };
+
+const ExtractJWT = passportJWT.ExtractJwt;
+const JWTStrategy = passportJWT.Strategy;
+
+passport.use(
+  new JWTStrategy({
+    jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+    secretOrKey: 'your_jwt_secret',
+  },
+  (jwtPayload, cb) => Users.findOneById(jwtPayload.id)
+    .then((user) => cb(null, user))
+    .catch((err) => cb(err)),
+  )
+);
+
+passport.use(new LocalStrategy({
+  usernameField: 'username',
+  passwordField: 'password',
+}, (username, password, cb) => {
+  Users.findOne(username)
+    .then((user) => {
+      if (!user) {
+        return cb(null, false, {
+          message: 'Incorrect email or password.',
+        });
+      } else {
+        bcrypt.compare(password, user.password, (err, result) => {
+          if (err || !result) {
+            return cb(null, false, {
+              message: 'Incorrect email or password.',
+            });
+          } else if (result) {
+            return cb(null, user, {
+              message: 'Logged In Successfully',
+            });
+          }
+        });
+      }
+    })
+    .catch((err) => {
+      return cb(err);
+    });
+  }),
+);
 
 const login = (req, res, next) => {
-  console.log('login');
+  // console.log('login');
   passport.authenticate(
     'local',
     {
       session: false,
     },
     (err, user, info) => {
+      // console.log('login call');
       if (err || !user) {
-        return res.status(400).json({
+        res.status(400).json({
           message: info ? info.message : 'Login failed',
           user: user,
         });
+      } else {
+        req.login(user, { session: false }, (error) => {
+          if (error) {
+            res.status(403).send(err);
+          } else {
+            const token = jwt.sign(user, 'secret');
+            res.status(200).json({ user, token });
+          }
+        });
       }
-      req.login(user, { session: false }, (error) => {
-        if (error) {
-          res.status(403).send(err);
-        }
-        const token = jwt.sign(user, 'secret');
-
-        res.status(200).json({ user, token });
-      });
     },
   )(req, res);
 };
@@ -60,7 +103,14 @@ const register = (req, res) => {
                 res.sendStatus(500);
               }
 
-              Users.createUser([email, username, hash, salt, firstName, lastName])
+              Users.createUser(
+                email,
+                username,
+                hash,
+                salt,
+                firstName,
+                lastName,
+              )
                 .then((data) => {
                   res.status(201).send(data);
                 })

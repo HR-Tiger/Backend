@@ -2,11 +2,11 @@ const express = require('express');
 const swaggerJSDoc = require('swagger-jsdoc');
 const morgan = require('morgan');
 
-
 const app = express();
 
 const Shops = require('./Controllers/shops');
 const Reviews = require('./Controllers/reviews');
+const Auth = require('./Controllers/auth');
 
 // CONSTANTS
 const PORT = process.env.PORT || 3000;
@@ -44,7 +44,7 @@ const swaggerSpec = swaggerJSDoc(options);
  *       200:
  *         description: Returns a mysterious string.
  */
-const Auth = require('./Controllers/auth');
+
 app.post('/api/auth/login', Auth.login);
 app.post('/api/auth/register', Auth.register);
 
