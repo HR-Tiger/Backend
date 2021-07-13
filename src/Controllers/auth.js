@@ -11,7 +11,7 @@ const login = (req, res) => {
     },
     (err, user, info) => {
       if (err || !user) {
-        console.log('auth.js', err, user);
+        // console.log('auth.js', err, user);
         res.status(400).json({
           message: info ? info.message : 'Login failed',
           msg: err,

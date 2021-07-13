@@ -39,6 +39,7 @@ app.put('/api/reviews/:review_id', Reviews.updateHelpfulness);
 
 app.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
   res.status(200).send(req.user);
+});
 // POST
 app.post('/api/shops', Shops.addShop);
 // app.post('/api/reviews/:shopId', Shop.addReview);

@@ -60,10 +60,6 @@ const getShop = (req, res) => {
   });
 };
 
-const getShop = (req, res) => {
-  res.send('');
-};
-
 const getHighRatingShops = (req, res) => {
   const threshold = req.body.rating || 4;
   const count = req.body.count || 9;
