@@ -1,5 +1,7 @@
 const express = require('express');
 const swaggerJSDoc = require('swagger-jsdoc');
+const morgan = require('morgan');
+
 
 const app = express();
 
@@ -10,6 +12,7 @@ const Reviews = require('./Controllers/reviews');
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(morgan('dev'));
 const swaggerDefinition = {
   info: {
     title: 'Node Swagger API',
