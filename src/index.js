@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(morgan('dev'));
+
 const swaggerDefinition = {
   info: {
     title: 'Node Swagger API',
@@ -43,6 +44,9 @@ const swaggerSpec = swaggerJSDoc(options);
  *       200:
  *         description: Returns a mysterious string.
  */
+const Auth = require('./Controllers/auth');
+app.post('/api/auth/login', Auth.login);
+app.post('/api/auth/register', Auth.register);
 
 app.get('/api/highRatingShops', Shops.getHighRatingShops);
 app.get('/api/recentShops', Shops.getRecentShops);
