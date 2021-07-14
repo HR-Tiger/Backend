@@ -44,7 +44,7 @@ app.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
 });
 // POST
 app.post('/api/shops', upload.array('photos'), Shops.addShop);
-// app.post('/api/reviews/:shopId', Shop.addReview);
+app.post('/api/reviews/:shopId', upload.array('photos'), Reviews.addReview);
 
 app.get('/', (req, res) => {
   res.status(200).send('Hello');
