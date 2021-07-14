@@ -1,10 +1,7 @@
 const fs = require('fs');
 const db = require('../config/db');
-<<<<<<< HEAD
 const Reviews = require('../Models/reviews');
-=======
 const { uploadFile } = require('../../s3');
->>>>>>> 40c60d488fa03fb35f596ed842b848a0304aee23
 
 const getReviews = (req, res) => {
   const shopId = req.params.id;
