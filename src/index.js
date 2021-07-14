@@ -57,4 +57,11 @@ app.get('/', (req, res) => {
 
 app.listen(PORT);
 
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  app.close(() => {
+    console.log('HTTP server closed');
+  });
+});
+
 module.exports = app;

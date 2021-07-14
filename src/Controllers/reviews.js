@@ -95,10 +95,6 @@ const getReviewsByUser = (req, res) => {
   });
 };
 
-const addReview = (req, res) => {
-
-};
-
 const getReviewsToAuthUser = (req, res) => {
   Reviews.reviewsToAuthUser(req.user.user_id)
     .then((result) => {
