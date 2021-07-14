@@ -98,7 +98,6 @@ const getReviewsByUser = (req, res) => {
   });
 };
 
-<<<<<<< HEAD
 const addReview = (req, res) => {
 
 };
@@ -111,7 +110,8 @@ const getReviewsToAuthUser = (req, res) => {
     .catch((error) => {
       res.status(500).send(error);
     });
-=======
+};
+
 const addReview = async (req, res) => {
   const { shopId } = req.params;
   const {
@@ -136,7 +136,6 @@ const addReview = async (req, res) => {
     }
   }
   res.send(store1);
->>>>>>> 40c60d488fa03fb35f596ed842b848a0304aee23
 };
 
 module.exports = {
