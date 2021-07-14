@@ -1,3 +1,4 @@
+const fs = require('fs');
 const db = require('../config/db');
 const { uploadFile } = require('../../s3');
 
@@ -126,20 +127,27 @@ const getRecentShops = async (req, res) => {
 };
 
 const addShop = async (req, res) => {
-  // console.log('file: ', req.file);
-  const {
-    name, address, city, state, zip, phone_number, website, animal_friendly,
-  } = req.body;
-  const sqlQuery1 = `INSERT INTO shops (name, address, city, state, zip, date, phone_number, website, animal_friendly) VALUES('${name}', '${address}', '${city}', '${state}', ${zip}, current_timestamp, '${phone_number}', '${website}', '${animal_friendly}') RETURNING shop_id;`;
-
-  const store1 = await db.query(sqlQuery1, []);
-  const shopId = store1.rows[0].shop_id;
-  const imagePath = 'image_storage/hr_logo.jpeg';
-  const saveToS3 = await uploadFile(imagePath, name);
-  const sqlQuery2 = `INSERT INTO shops_photos (shop_id, url) VALUES (${shopId}, '${saveToS3.Location}');`;
-  await db.query(sqlQuery2);
-  res.send(store1);
-  // res.send('Hi!');
+  console.log('req: ', req.files);
+  // const {
+  //   name, address, city, state, zip, phone_number, website, animal_friendly,
+  // } = req.body;
+  // const sqlQuery1 = `INSERT INTO shops (name, address, city, state, zip, date, phone_number, website, animal_friendly) VALUES('${name}', '${address}', '${city}', '${state}', ${zip}, current_timestamp, '${phone_number}', '${website}', '${animal_friendly}') RETURNING shop_id;`;
+  // const store1 = await db.query(sqlQuery1, []);
+  if (req.files) {
+    for (let i = 0; i < req.files.length; i += 1) {
+      const shopId = 1;
+      const saveToS3 = await uploadFile(req.files[i]);
+      const sqlQuery2 = `INSERT INTO shops_photos (shop_id, url) VALUES (${shopId}, '${saveToS3.Location}');`;
+      await db.query(sqlQuery2);
+      fs.unlink(req.files[i].path, ((err) => {
+        if (err) console.log(err);
+        else if (i === req.files.length - 1) {
+          res.send('Hi!');
+        }
+      }));
+    }
+  }
+  // res.send(store1);
 };
 
 module.exports = {

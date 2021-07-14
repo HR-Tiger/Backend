@@ -13,13 +13,13 @@ const s3 = new S3({
   secretAccessKey,
 });
 
-function uploadFile(imagePath, storageName) {
-  const fileStream = fs.createReadStream(imagePath);
+function uploadFile(file) {
+  const fileStream = fs.createReadStream(file.path);
 
   const uploadParams = {
     Bucket: bucketName,
     Body: fileStream,
-    Key: storageName,
+    Key: file.filename,
   };
 
   return s3.upload(uploadParams).promise();
