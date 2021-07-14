@@ -1,7 +1,9 @@
 const express = require('express');
 const morgan = require('morgan');
 const passport = require('passport');
+const multer = require('multer');
 
+const upload = multer({ dest: 'image_storage/' });
 require('./auth/passport');
 const swaggerJSDoc = require('swagger-jsdoc');
 const cors = require('cors');
@@ -46,8 +48,8 @@ app.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
   res.status(200).send(req.user);
 });
 // POST
-app.post('/api/shops', Shops.addShop);
-// app.post('/api/reviews/:shopId', Shop.addReview);
+app.post('/api/shops', upload.array('photos'), Shops.addShop);
+app.post('/api/reviews/:shopId', upload.array('photos'), Reviews.addReview);
 
 app.get('/', (req, res) => {
   res.status(200).send('Hello');

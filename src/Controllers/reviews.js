@@ -1,5 +1,10 @@
+const fs = require('fs');
 const db = require('../config/db');
+<<<<<<< HEAD
 const Reviews = require('../Models/reviews');
+=======
+const { uploadFile } = require('../../s3');
+>>>>>>> 40c60d488fa03fb35f596ed842b848a0304aee23
 
 const getReviews = (req, res) => {
   const shopId = req.params.id;
@@ -93,6 +98,7 @@ const getReviewsByUser = (req, res) => {
   });
 };
 
+<<<<<<< HEAD
 const addReview = (req, res) => {
 
 };
@@ -105,6 +111,32 @@ const getReviewsToAuthUser = (req, res) => {
     .catch((error) => {
       res.status(500).send(error);
     });
+=======
+const addReview = async (req, res) => {
+  const { shopId } = req.params;
+  const {
+    user_id, summary, category, description, rating,
+  } = req.body;
+  const owner_response = '';
+
+  const sqlQuery1 = `INSERT INTO reviews (user_id, shop_id, summary, category, description, rating, owner_response, date) VALUES(${user_id}, ${shopId}, '${summary}', '${category}', '${description}', ${rating}, '${owner_response}', current_timestamp) RETURNING review_id;`;
+  const store1 = await db.query(sqlQuery1, []);
+  if (req.files) {
+    for (let i = 0; i < req.files.length; i += 1) {
+      const reviewId = store1.rows[0].review_id;
+      const saveToS3 = await uploadFile(req.files[i]);
+      const sqlQuery2 = `INSERT INTO reviews_photos (review_id, url) VALUES (${reviewId}, '${saveToS3.Location}');`;
+      await db.query(sqlQuery2);
+      fs.unlink(req.files[i].path, ((err) => {
+        if (err) console.log(err);
+        else if (i === req.files.length - 1) {
+          res.send('Hi');
+        }
+      }));
+    }
+  }
+  res.send(store1);
+>>>>>>> 40c60d488fa03fb35f596ed842b848a0304aee23
 };
 
 module.exports = {
