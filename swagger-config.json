@@ -1,0 +1,9 @@
+{
+  "swaggerDefinition": {
+    "info": {
+      "title": "Platform",
+      "version": "1.0.0"
+    }
+  },
+  "apis": ["src/index.js"]
+}
