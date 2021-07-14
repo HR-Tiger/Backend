@@ -1,6 +1,5 @@
 const path = require('path');
-const { storeImage } = require('../image_storage/storeImage');
-const { retrieveImage } = require('../image_storage/retrieveImage');
+const fs = require('fs');
 const db = require('../config/db');
 
 const getShops = (req, res) => {
@@ -106,6 +105,9 @@ const getRecentShops = async (req, res) => {
   const sqlQuery = `
   SELECT
     s.*,
+    (SELECT json_agg(to_jsonb(p) #- '{photo_id}' #- '{shop_id}')
+    FROM shops_photos p
+    WHERE p.shop_id = s.shop_id) AS photos,
     AVG(r.rating) as avg_rating
   FROM shops s
   LEFT JOIN reviews r
@@ -117,25 +119,10 @@ const getRecentShops = async (req, res) => {
   ;
   `;
 
-  const shopIds = [];
   let data = await db.query(sqlQuery, [count, page * count]);
   for (let i = 0; i < data.rows.length; i += 1) {
-    shopIds.push(data.rows[i].shop_id);
     data.rows[i].price = 3;
   }
-  // const shopIdsString = shopIds.toString();
-  const shopIdsString = '1,2,3,4';
-  const sqlQueryB = `SELECT * FROM shops_photos WHERE shop_id = ANY(ARRAY[${shopIdsString}])`;
-  const result = await db.query(sqlQueryB);
-  const images = [];
-
-  for (let r = 0; r < result.rows.length; r += 1) {
-    if (result.rows[r].mongo_id) {
-      let image = await retrieveImage(result.rows[r].mongo_id);
-      images.push(image);
-    }
-  }
-  res.json(images);
   res.status(200).json(data.rows);
 };
 
@@ -144,29 +131,14 @@ const addShop = (req, res) => {
     name, address, city, state, zip, phone_number, website, animal_friendly,
   } = req.body;
   const sqlQuery = `INSERT INTO shops (name, address, city, state, zip, date, phone_number, website, animal_friendly) VALUES('${name}', '${address}', '${city}', '${state}', ${zip}, current_timestamp, '${phone_number}', '${website}', '${animal_friendly}') RETURNING shop_id;`;
-  let shopId = 1;
 
   db.query(sqlQuery, [], (err, success) => {
     if (err) {
       res.status(500).json(err);
     } else {
-      shopId = success.rows[0].shop_id;
+      res.status(201).send(success);
     }
   });
-
-  const image = path.join(__dirname, '../../image_examples/storage/hr_logo.jpeg');
-  const url = '';
-  const saveImageId = (mongoId) => {
-    const query = `INSERT INTO shops_photos (shop_id, url, mongo_id) VALUES (${shopId}, '${url}', '${mongoId}');`;
-    db.query(query, [], (err, success) => {
-      if (err) {
-        res.status(500).json(err);
-      } else {
-        res.status(201).send(success);
-      }
-    });
-  };
-  storeImage(image, saveImageId);
 };
 
 module.exports = {

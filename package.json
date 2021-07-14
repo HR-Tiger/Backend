@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/HR-Tiger/ExampleAPI#readme",
   "dependencies": {
+    "aws-sdk": "^2.945.0",
     "bcrypt": "^5.0.1",
     "bluebird": "^3.7.2",
     "cors": "^2.8.5",
