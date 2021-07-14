@@ -26,13 +26,22 @@ app.post('/api/auth/register', Auth.register);
 
 // GET
 app.get('/api/users/:id', Users.getUser);
+
 app.get('/api/highRatingShops', Shops.getHighRatingShops);
 app.get('/api/recentShops', Shops.getRecentShops);
 app.get('/api/shops', Shops.getShops);
 app.get('/api/shops/:id', Shops.getShop);
 app.get('/api/shops/:id/reviews', Reviews.getReviews);
+
+app.get('/api/reviews/user/', passport.authenticate('jwt', { session: false }), Reviews.getReviewsToAuthUser);
 app.get('/api/reviews/:review_id', Reviews.getReview);
 app.get('/api/reviews/users/:id', Reviews.getReviewsByUser);
+// GET /api/shops/filter
+// body: {
+//   rating: []
+//   petfriendly: 'dontcare' || true || false
+//   price: []
+// }
 
 // PUT
 app.put('/api/reviews/:review_id', Reviews.updateHelpfulness);

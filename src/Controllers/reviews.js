@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const Reviews = require('../Models/reviews');
 
 const getReviews = (req, res) => {
   const shopId = req.params.id;
@@ -93,7 +94,18 @@ const getReviewsByUser = (req, res) => {
 };
 
 const addReview = (req, res) => {
-  
+
+};
+
+const getReviewsToAuthUser = (req, res) => {
+  console.log(req.user);
+  Reviews.reviewsToAuthUser(req.user.user_id)
+    .then((result) => {
+      res.status(200).send(result);
+    })
+    .catch((error) => {
+      res.status(500);
+    });
 };
 
 module.exports = {
@@ -102,4 +114,5 @@ module.exports = {
   updateHelpfulness,
   getReviewsByUser,
   addReview,
+  getReviewsToAuthUser,
 };
