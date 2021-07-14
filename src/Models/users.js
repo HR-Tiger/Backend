@@ -100,9 +100,21 @@ const findOneById = (id) => new Promise((resolve, reject) => {
   });
 });
 
+const userProfileInfo = (id) => {
+  return new Promise((resolve, reject) => {
+    db.query(`SELECT json_agg(to_jsonb(u) #- '{salt}' #- '{password}') FROM users u WHERE user_id = $1;`, [id], (error, data) => {
+      if(error) {
+        reject(error);
+      }
+      resolve(data.rows[0]['json_agg'][0]);
+    });
+  });
+};
+
 module.exports = {
   createUser,
   checkEmailOrUsername,
   findOne,
   findOneById,
+  userProfileInfo,
 };
