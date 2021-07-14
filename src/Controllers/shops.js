@@ -1,4 +1,7 @@
+const multer = require('multer');
 const db = require('../config/db');
+const { uploadFile } = require('../../s3');
+const upload = multer({ dest: 'image_storage/' });
 
 const getShops = (req, res) => {
   const count = req.body.count || 9;
@@ -82,27 +85,31 @@ const getHighRatingShops = (req, res) => {
   ;
   `;
 
+  const shopIds = [];
+
   db.query(sqlQuery, [threshold, count, page * count], (err, data) => {
     if (err) {
       res.sendStatus(500);
     }
     for (let i = 0; i < data.rows.length; i += 1) {
       data.rows[i].price = 3;
+      shopIds.push(data.rows[i].shop_id);
     }
     res.status(200).json(data.rows);
   });
 };
 
-const getRecentShops = (req, res) => {
+const getRecentShops = async (req, res) => {
   const count = req.body.count || 9;
   const page = req.body.page || 0;
 
   const sqlQuery = `
   SELECT
     s.*,
-    (SELECT json_agg(to_jsonb(p) #- '{photo_id}' #- '{shop_id}') FROM shops_photos p,
+    (SELECT json_agg(to_jsonb(p) #- '{photo_id}' #- '{shop_id}')
+    FROM shops_photos p
+    WHERE p.shop_id = s.shop_id) AS photos,
     AVG(r.rating) as avg_rating
-  WHERE p.shop_id = s.shop_id) AS photos
   FROM shops s
   LEFT JOIN reviews r
   ON s.shop_id = r.shop_id
@@ -113,37 +120,26 @@ const getRecentShops = (req, res) => {
   ;
   `;
 
-  db.query(sqlQuery, [count, page * count], (err, data) => {
-    if (err) {
-      console.log(err);
-      res.sendStatus(500);
-    }
-    for (let i = 0; i < data.rows.length; i += 1) {
-      data.rows[i].price = 3;
-    }
-    res.status(200).json(data.rows);
-  });
+  const data = await db.query(sqlQuery, [count, page * count]);
+  for (let i = 0; i < data.rows.length; i += 1) {
+    data.rows[i].price = 3;
+  }
+  res.status(200).json(data.rows);
 };
 
-const addShop = (req, res) => {
-  let name = req.body.name;
-  let address = req.body.address;
-  let city = req.body.city;
-  let state = req.body.state;
-  let zip = req.body.zip;
-  let phone_number = req.body.phone_number;
-  // let price = req.body.price;
-  let website = req.body.website;
-  let animal_friendly = req.body.animal_friendly;
+const addShop = async (req, res) => {
+  const {
+    name, address, city, state, zip, phone_number, website, animal_friendly,
+  } = req.body;
+  const sqlQuery1 = `INSERT INTO shops (name, address, city, state, zip, date, phone_number, website, animal_friendly) VALUES('${name}', '${address}', '${city}', '${state}', ${zip}, current_timestamp, '${phone_number}', '${website}', '${animal_friendly}') RETURNING shop_id;`;
 
- const sqlQuery = `INSERT INTO shops (name, address, city, state, zip, date, phone_number, website, animal_friendly) VALUES('${name}', '${address}', '${city}', '${state}', ${zip}, current_timestamp, '${phone_number}', '${website}', '${animal_friendly}');`;
-
-  db.query(sqlQuery, [], (err, success) => {
-    if (err) {
-      res.status(500).json(err);
-    }
-    res.status(201).send(success);
-  });
+  const store1 = await db.query(sqlQuery1, []);
+  const shopId = store1.rows[0].shop_id;
+  const imagePath = 'image_storage/hr_logo.jpeg';
+  const saveToS3 = await uploadFile(imagePath, name);
+  const sqlQuery2 = `INSERT INTO shops_photos (shop_id, url) VALUES (${shopId}, '${saveToS3.Location}');`;
+  await db.query(sqlQuery2);
+  res.send(store1);
 };
 
 module.exports = {

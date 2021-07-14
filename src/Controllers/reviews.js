@@ -92,9 +92,14 @@ const getReviewsByUser = (req, res) => {
   });
 };
 
+const addReview = (req, res) => {
+  
+};
+
 module.exports = {
   getReviews,
   getReview,
   updateHelpfulness,
   getReviewsByUser,
+  addReview,
 };
