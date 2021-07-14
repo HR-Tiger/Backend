@@ -1,7 +1,5 @@
-const multer = require('multer');
 const db = require('../config/db');
 const { uploadFile } = require('../../s3');
-const upload = multer({ dest: 'image_storage/' });
 
 const getShops = (req, res) => {
   const count = req.body.count || 9;
@@ -132,6 +130,7 @@ const addShop = async (req, res) => {
     name, address, city, state, zip, phone_number, website, animal_friendly,
   } = req.body;
   const sqlQuery1 = `INSERT INTO shops (name, address, city, state, zip, date, phone_number, website, animal_friendly) VALUES('${name}', '${address}', '${city}', '${state}', ${zip}, current_timestamp, '${phone_number}', '${website}', '${animal_friendly}') RETURNING shop_id;`;
+
 
   const store1 = await db.query(sqlQuery1, []);
   const shopId = store1.rows[0].shop_id;
