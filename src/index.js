@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
-app.use(express.static('public'));
+// app.use(express.static('public'));
 
 app.post('/api/auth/login', Auth.login);
 app.post('/api/auth/register', Auth.register);
