@@ -6,6 +6,7 @@
   "scripts": {
     "pre-commit-msg": "echo \"Precommit Message...\"",
     "test": "jest --coverage",
+    "swagger": "swagger-jsdoc-generator swagger-config.json",
     "lint": "eslint",
     "start": "node ./src/index.js",
     "start:dev": "nodemon --watch src ./src/index.js"
@@ -45,6 +46,7 @@
     "jest": "^27.0.6",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.11",
-    "pre-commit": "^1.2.2"
+    "pre-commit": "^1.2.2",
+    "swagger-jsdoc-generator": "^1.0.3"
   }
 }
