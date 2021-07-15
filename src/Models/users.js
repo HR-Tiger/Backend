@@ -2,6 +2,25 @@ const Promise = require('bluebird');
 
 const db = require('../config/db');
 
+const getUser = (id) => {
+  return new Promise((resolve, reject) => {
+    const sqlQuery = `
+    SELECT
+      json_agg(to_jsonb(u) #- '{password}')
+    FROM
+      users u
+    WHERE user_id = $1;
+  `;
+    db.query(sqlQuery, [id], (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data.rows[0]['json_agg'][0]);
+      }
+    });
+  });
+}
+
 const createUserSqlQuery = `
   INSERT INTO
     users (
@@ -117,4 +136,5 @@ module.exports = {
   findOne,
   findOneById,
   userProfileInfo,
+  getUser,
 };
