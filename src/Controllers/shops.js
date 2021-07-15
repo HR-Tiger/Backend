@@ -4,8 +4,8 @@ const Shops = require('../Models/shops');
 const { uploadFile } = require('../../s3');
 
 const getShops = (req, res) => {
-  const count = req.body.count || 9;
-  const page = req.body.page || 0;
+  const count = req.params.count || 9;
+  const page = req.params.page || 0;
 
   const sqlQuery = `
   SELECT s.*,
@@ -34,8 +34,8 @@ const getShops = (req, res) => {
 
 const getShop = (req, res) => {
   const shopId = req.params.id;
-  const count = req.body.count || 9;
-  const page = req.body.page || 0;
+  const count = req.params.count || 9;
+  const page = req.params.page || 0;
 
   const sqlQuery = `
   SELECT s.*,
@@ -66,8 +66,8 @@ const getShop = (req, res) => {
 
 const getHighRatingShops = (req, res) => {
   const threshold = req.body.rating || 4;
-  const count = req.body.count || 9;
-  const page = req.body.page || 0;
+  const count = req.params.count || 9;
+  const page = req.params.page || 0;
 
   const sqlQuery = `
   SELECT
@@ -101,8 +101,8 @@ const getHighRatingShops = (req, res) => {
 };
 
 const getRecentShops = async (req, res) => {
-  const count = req.body.count || 9;
-  const page = req.body.page || 0;
+  const count = req.params.count || 9;
+  const page = req.params.page || 0;
 
   const sqlQuery = `
   SELECT
