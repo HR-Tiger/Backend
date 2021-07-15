@@ -23,7 +23,19 @@ const getShopByCity = (city) => {
   });
 };
 
+const filterShops = (query, values) => {
+  return new Promise((resolve, reject) => {
+    db.query(query, values, (error, data) => {
+      if(error) {
+        reject(error);
+      }
+      resolve(data.rows);
+    })
+  })
+}
+
 module.exports = {
   getShopByName,
   getShopByCity,
+  filterShops,
 };

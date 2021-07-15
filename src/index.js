@@ -35,6 +35,7 @@ app.get('/api/highRatingShops', Shops.getHighRatingShops);
 app.get('/api/recentShops', Shops.getRecentShops);
 app.get('/api/shops', Shops.getShops);
 app.get('/api/shops/:id', Shops.getShop);
+app.get('/api/shops/filter', Shops.filterShops);
 app.get('/api/shops/:id/reviews', Reviews.getReviews);
 
 app.get('/api/reviews/user/', passport.authenticate('jwt', { session: false }), Reviews.getReviewsToAuthUser);
