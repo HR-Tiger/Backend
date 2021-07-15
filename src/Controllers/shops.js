@@ -175,7 +175,6 @@ const searchShop = (req, res) => {
 const filterShops = (req, res) => {
   price = req.body.price || [1, 2, 3, 4, 5];
   rating = req.body.rating || [1, 2, 3, 4, 5];
-  petfriendly = req.body.petfriendly || 1;
 
   const sql = `
     SELECT
@@ -197,7 +196,6 @@ const filterShops = (req, res) => {
       rs.avarage IN $1 AND rs.price IN $2;
   `;
   // AND rs.animal_friendly = true
-
 
   Shops.filterShops(query, values)
     .then((result) => {

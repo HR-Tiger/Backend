@@ -23,7 +23,10 @@ const login = (req, res) => {
             res.status(403).send(err);
           } else {
             const token = jwt.sign(user, 'secret');
-            res.status(200).json({ token });
+            res.status(200).json({
+              token: token,
+              user_id: user.user_id,
+            });
           }
         });
       }
