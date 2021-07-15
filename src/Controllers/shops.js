@@ -172,6 +172,42 @@ const searchShop = (req, res) => {
   }
 };
 
+const filterShops = (req, res) => {
+  price = req.body.price || [1, 2, 3, 4, 5];
+  rating = req.body.rating || [1, 2, 3, 4, 5];
+  petfriendly = req.body.petfriendly || 1;
+
+  const sql = `
+    SELECT
+      rs.shop_id,
+      rs.avarage,
+      rs.animal_friendly
+    FROM
+      (SELECT s.*,
+        (SELECT
+          ROUND(AVG(r.rating))
+        FROM
+          reviews r
+        WHERE
+          r.shop_id = s.shop_id
+      ) AS avarage
+      FROM
+        shops s) AS rs
+    WHERE
+      rs.avarage IN $1 AND rs.price IN $2;
+  `;
+  // AND rs.animal_friendly = true
+
+
+  Shops.filterShops(query, values)
+    .then((result) => {
+      res.status(200).send(result);
+    })
+    .catch((error) => {
+      res.status(500).send(error);
+    });
+};
+
 module.exports = {
   getShops,
   getShop,
@@ -179,4 +215,5 @@ module.exports = {
   getRecentShops,
   searchShop,
   addShop,
+  filterShops,
 };
