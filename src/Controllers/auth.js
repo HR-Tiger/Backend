@@ -51,10 +51,12 @@ const register = (req, res) => {
         } else {
           bcrypt.genSalt(10, (err, salt) => {
             if (err) {
+              console.log(err);
               res.sendStatus(500);
             }
             bcrypt.hash(password, salt, (error, hash) => {
               if (error) {
+                console.log(err)
                 res.sendStatus(500);
               }
 
@@ -70,6 +72,7 @@ const register = (req, res) => {
                   res.status(201).send(data);
                 })
                 .catch((err) => {
+                  console.log(err);
                   res.status(500).send(err);
                 });
             });

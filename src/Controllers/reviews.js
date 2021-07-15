@@ -1,5 +1,6 @@
 const fs = require('fs');
 const db = require('../config/db');
+const Reviews = require('../Models/reviews');
 const { uploadFile } = require('../../s3');
 
 const getReviews = (req, res) => {
@@ -94,6 +95,16 @@ const getReviewsByUser = (req, res) => {
   });
 };
 
+const getReviewsToAuthUser = (req, res) => {
+  Reviews.reviewsToAuthUser(req.user.user_id)
+    .then((result) => {
+      res.status(200).send(result);
+    })
+    .catch((error) => {
+      res.status(500).send(error);
+    });
+};
+
 const addReview = async (req, res) => {
   const { shopId } = req.params;
   const {
@@ -126,4 +137,5 @@ module.exports = {
   updateHelpfulness,
   getReviewsByUser,
   addReview,
+  getReviewsToAuthUser,
 };

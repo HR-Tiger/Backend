@@ -1,5 +1,6 @@
 const fs = require('fs');
 const db = require('../config/db');
+const Shops = require('../Models/shops');
 const { uploadFile } = require('../../s3');
 
 const getShops = (req, res) => {
@@ -149,10 +150,33 @@ const addShop = async (req, res) => {
   res.send(store1);
 };
 
+const searchShop = (req, res) => {
+  if (req.query.name) {
+    Shops.getShopByName(req.query.name)
+      .then((result) => {
+        res.status(200).send(result);
+      })
+      .catch((error) => {
+        res.status(500).send(error);
+      });
+  } else if (req.query.city) {
+    Shops.getShopByCity(req.query.city)
+      .then((result) => {
+        res.status(200).send(result);
+      })
+      .catch((error) => {
+        res.stutus(500).send(error);
+      });
+  } else {
+    res.status(422).send('Search parameter is not specified');
+  }
+};
+
 module.exports = {
   getShops,
   getShop,
   getHighRatingShops,
   getRecentShops,
+  searchShop,
   addShop,
 };
