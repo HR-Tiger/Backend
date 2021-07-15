@@ -112,7 +112,7 @@ const addReview = async (req, res) => {
       fs.unlink(req.files[i].path, ((err) => {
         if (err) console.log(err);
         else if (i === req.files.length - 1) {
-          res.send('Hi');
+          res.send(store1);
         }
       }));
     }
