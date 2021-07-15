@@ -54,6 +54,7 @@ const getShop = (req, res) => {
 
   db.query(sqlQuery, [shopId, count, page * count], (err, data) => {
     if (err) {
+      console.log(err);
       res.sendStatus(500);
     }
     for (let i = 0; i < data.rows.length; i += 1) {
@@ -173,13 +174,17 @@ const searchShop = (req, res) => {
 };
 
 const filterShops = (req, res) => {
-  price = req.body.price || [1, 2, 3, 4, 5];
-  rating = req.body.rating || [1, 2, 3, 4, 5];
+  const price = req.body.price || [1, 2, 3, 4, 5];
+  const priceString = price.join(',');
+  const rating = req.body.rating || [1, 2, 3, 4, 5];
+  const ratingString = rating.join(',');
+  const animal_friendly = req.body.animal_friendly || [true, false];
+  const animal_friendly_string = animal_friendly.join(',');
 
   const sql = `
     SELECT
       rs.shop_id,
-      rs.avarage,
+      rs.average,
       rs.animal_friendly
     FROM
       (SELECT s.*,
@@ -189,15 +194,16 @@ const filterShops = (req, res) => {
           reviews r
         WHERE
           r.shop_id = s.shop_id
-      ) AS avarage
+      ) AS average
       FROM
         shops s) AS rs
     WHERE
-      rs.avarage IN $1 AND rs.price IN $2;
-  `;
-  // AND rs.animal_friendly = true
+      rs.average = ANY(ARRAY[${ratingString}])
+      AND rs.price = ANY(ARRAY[${priceString}])
+      AND rs.animal_friendly = ANY(ARRAY[${animal_friendly_string}])
+  ;`;
 
-  Shops.filterShops(query, values)
+  Shops.filterShops(sql)
     .then((result) => {
       res.status(200).send(result);
     })

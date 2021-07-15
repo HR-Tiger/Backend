@@ -29,32 +29,26 @@ app.post('/api/auth/register', Auth.register);
 // GET
 app.get('/api/user/', passport.authenticate('jwt', { session: false }), Users.getUserProfileInfo);
 app.get('/api/users/:id', Users.getUser);
-
 app.get('/api/shops/search', Shops.searchShop);
 app.get('/api/highRatingShops', Shops.getHighRatingShops);
 app.get('/api/recentShops', Shops.getRecentShops);
+app.get('/api/shops/filter', Shops.filterShops);
 app.get('/api/shops', Shops.getShops);
 app.get('/api/shops/:id', Shops.getShop);
-app.get('/api/shops/filter', Shops.filterShops);
 app.get('/api/shops/:id/reviews', Reviews.getReviews);
-
 app.get('/api/reviews/user/', passport.authenticate('jwt', { session: false }), Reviews.getReviewsToAuthUser);
 app.get('/api/reviews/:review_id', Reviews.getReview);
 app.get('/api/reviews/users/:id', Reviews.getReviewsByUser);
+app.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
+  res.status(200).send(req.user);
+});
 
 // PUT
 app.put('/api/reviews/:review_id', Reviews.updateHelpfulness);
 
-app.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
-  res.status(200).send(req.user);
-});
 // POST
 app.post('/api/shops', upload.array('photos'), Shops.addShop);
 app.post('/api/reviews/:shopId', upload.array('photos'), Reviews.addReview);
-
-app.get('/', (req, res) => {
-  res.status(200).send('Hello');
-});
 
 app.listen(PORT);
 

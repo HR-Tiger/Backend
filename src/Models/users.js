@@ -2,24 +2,22 @@ const Promise = require('bluebird');
 
 const db = require('../config/db');
 
-const getUser = (id) => {
-  return new Promise((resolve, reject) => {
-    const sqlQuery = `
+const getUser = (id) => new Promise((resolve, reject) => {
+  const sqlQuery = `
     SELECT
       json_agg(to_jsonb(u) #- '{password}')
     FROM
       users u
     WHERE user_id = $1;
   `;
-    db.query(sqlQuery, [id], (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data.rows[0]['json_agg'][0]);
-      }
-    });
+  db.query(sqlQuery, [id], (err, data) => {
+    if (err) {
+      reject(err);
+    } else {
+      resolve(data.rows[0].json_agg[0]);
+    }
   });
-}
+});
 
 const createUserSqlQuery = `
   INSERT INTO
@@ -115,20 +113,18 @@ const findOneById = (id) => new Promise((resolve, reject) => {
     if (err) {
       reject(err);
     }
-    resolve(data.rows[0]['json_agg'][0]);
+    resolve(data.rows[0].json_agg[0]);
   });
 });
 
-const userProfileInfo = (id) => {
-  return new Promise((resolve, reject) => {
-    db.query(`SELECT json_agg(to_jsonb(u) #- '{salt}' #- '{password}') FROM users u WHERE user_id = $1;`, [id], (error, data) => {
-      if(error) {
-        reject(error);
-      }
-      resolve(data.rows[0]['json_agg'][0]);
-    });
+const userProfileInfo = (id) => new Promise((resolve, reject) => {
+  db.query('SELECT json_agg(to_jsonb(u) #- \'{salt}\' #- \'{password}\') FROM users u WHERE user_id = $1;', [id], (error, data) => {
+    if (error) {
+      reject(error);
+    }
+    resolve(data.rows[0].json_agg[0]);
   });
-};
+});
 
 module.exports = {
   createUser,
