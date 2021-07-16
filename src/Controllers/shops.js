@@ -128,27 +128,94 @@ const getRecentShops = async (req, res) => {
   res.status(200).json(data.rows);
 };
 
+/**
+ * Add shop POST request for /api/shop endpoint
+ * @param {Object} req - The request
+ * @param {Object} res - The response
+ *
+ * @typedef {Object} req.body
+ * @param {String} name
+ * @param {String} address
+ * @param {String} city
+ * @param {String} state
+ * @param {Integer} zip - length < 4
+ * @param {String} phone_number
+ * @param {String} website
+ * @param {Boolean} animal_friendly
+ * @return {undefined}
+ * {
+ *  "name": "Marko",
+ *  "address": "kok",
+ *  "city": "cit",
+ *  "state": "eee",
+ *  "zip": 1029222,
+ *  "phone_number": "ded",
+ *  "website": "ddd",
+ *  "animal_friendly": true
+ * }
+ */
+
 const addShop = async (req, res) => {
-  const {
-    name, address, city, state, zip, phone_number, website, animal_friendly,
+  let {
+    name,
+    address,
+    city,
+    state,
+    zip,
+    phone_number,
+    website,
+    animal_friendly,
+    price,
   } = req.body;
-  const sqlQuery1 = `INSERT INTO shops (name, address, city, state, zip, date, phone_number, website, animal_friendly) VALUES('${name}', '${address}', '${city}', '${state}', ${zip}, current_timestamp, '${phone_number}', '${website}', '${animal_friendly}') RETURNING shop_id;`;
-  const store1 = await db.query(sqlQuery1, []);
-  if (req.files) {
-    for (let i = 0; i < req.files.length; i += 1) {
-      const shopId = store1.rows[0].shop_id;
-      const saveToS3 = await uploadFile(req.files[i]);
-      const sqlQuery2 = `INSERT INTO shops_photos (shop_id, url) VALUES (${shopId}, '${saveToS3.Location}');`;
-      await db.query(sqlQuery2);
-      fs.unlink(req.files[i].path, ((err) => {
-        if (err) console.log(err);
-        else if (i === req.files.length - 1) {
-          res.send(store1);
-        }
-      }));
+  zip = Number(zip);
+  price = Number(price);
+  if (
+    typeof name === 'string' &&
+    typeof address === 'string' &&
+    typeof city === 'string' &&
+    typeof state === 'string' &&
+    typeof zip === 'number' &&
+    typeof phone_number === 'string' &&
+    typeof website === 'string' &&
+    typeof animal_friendly === 'boolean' &&
+    typeof price === 'number'
+  ) {
+    const sqlQuery1 = `
+      INSERT INTO
+        shops (
+          name, address, city, state, zip, date, phone_number, website, animal_friendly, price
+        )
+      VALUES (
+        $1, $2, $3, $4, $5, current_timestamp, $6, $7, $8, $9
+      )
+      RETURNING
+        shop_id;
+      `;
+
+    const store1 = await db.query(sqlQuery1, [name, address, city, state, zip, phone_number, website, animal_friendly, price]);
+
+    if (store1.stack) {
+      res.status(500).send(store1.stack);
     }
+
+    if (req.files) {
+      for (let i = 0; i < req.files.length; i += 1) {
+        const shopId = store1.rows[0].shop_id;
+        const saveToS3 = await uploadFile(req.files[i]);
+        const sqlQuery2 = `INSERT INTO shops_photos (shop_id, url) VALUES (${shopId}, '${saveToS3.Location}');`;
+        await db.query(sqlQuery2);
+        fs.unlink(req.files[i].path, ((err) => {
+          if (err) res.status(300).send(err);
+          else if (i === req.files.length - 1) {
+            res.send(store1);
+          }
+        }));
+      }
+    }
+    res.status(201).send(store1);
+  } else {
+    res.sendStatus(400);
   }
-  res.send(store1);
 };
 
 const searchShop = (req, res) => {
