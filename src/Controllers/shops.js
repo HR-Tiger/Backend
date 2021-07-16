@@ -183,9 +183,7 @@ const filterShops = (req, res) => {
 
   const sql = `
     SELECT
-      rs.shop_id,
-      rs.average,
-      rs.animal_friendly
+      *
     FROM
       (SELECT s.*,
         (SELECT

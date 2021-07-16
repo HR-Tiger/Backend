@@ -2,7 +2,17 @@ const Promise = require('bluebird');
 const db = require('../config/db');
 
 const getShopByName = (name) => new Promise((resolve, reject) => {
-  db.query('SELECT * FROM shops WHERE name = $1;', [name], (error, data) => {
+  const sql = `
+              SELECT
+              s.*,
+              AVG(r.rating) as avg_rating
+              FROM shops s
+              LEFT JOIN reviews r
+              ON s.shop_id = r.shop_id
+              WHERE name = $1
+              GROUP BY 1,2,3,4,5,6,7,8,9,10;
+              `;
+  db.query(sql, [name], (error, data) => {
     if (error) {
       reject(error);
     }
@@ -11,7 +21,17 @@ const getShopByName = (name) => new Promise((resolve, reject) => {
 });
 
 const getShopByCity = (city) => new Promise((resolve, reject) => {
-  db.query('SELECT * FROM shops WHERE city = $1;', [city], (error, data) => {
+  const sql = `
+                SELECT
+                s.*,
+                AVG(r.rating) as avg_rating
+                FROM shops s
+                LEFT JOIN reviews r
+                ON s.shop_id = r.shop_id
+                WHERE city = $1
+                GROUP BY 1,2,3,4,5,6,7,8,9,10;
+                `;
+  db.query(sql, [city], (error, data) => {
     if (error) {
       reject(error);
     }

@@ -33,6 +33,8 @@ app.get('/api/shops/search', Shops.searchShop);
 app.get('/api/highRatingShops', Shops.getHighRatingShops);
 app.get('/api/recentShops', Shops.getRecentShops);
 app.get('/api/shops/filter', Shops.filterShops);
+app.get('/api/shops/:id/reviews/filter', Reviews.filterReviews);
+app.get('/api/reviews/users/:id/filter', Users.filterReviewsByUser);
 app.get('/api/shops', Shops.getShops);
 app.get('/api/shops/:id', Shops.getShop);
 app.get('/api/shops/:id/reviews', Reviews.getReviews);
