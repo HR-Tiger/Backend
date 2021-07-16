@@ -169,16 +169,19 @@ const addShop = async (req, res) => {
   } = req.body;
   zip = Number(zip);
   price = Number(price);
+  let animal_friendly_bool;
+  if (animal_friendly === 'true') {
+    animal_friendly_bool = true;
+  } else {
+    animal_friendly_bool = false;
+  }
   if (
     typeof name === 'string' &&
     typeof address === 'string' &&
     typeof city === 'string' &&
     typeof state === 'string' &&
-    typeof zip === 'number' &&
     typeof phone_number === 'string' &&
-    typeof website === 'string' &&
-    typeof animal_friendly === 'boolean' &&
-    typeof price === 'number'
+    typeof website === 'string'
   ) {
     const sqlQuery1 = `
       INSERT INTO
@@ -192,7 +195,7 @@ const addShop = async (req, res) => {
         shop_id;
       `;
 
-    const store1 = await db.query(sqlQuery1, [name, address, city, state, zip, phone_number, website, animal_friendly, price]);
+    const store1 = await db.query(sqlQuery1, [name, address, city, state, zip, phone_number, website, animal_friendly_bool, price]);
 
     if (store1.stack) {
       res.status(500).send(store1.stack);

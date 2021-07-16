@@ -132,9 +132,6 @@ const addReview = async (req, res) => {
 };
 
 const filterReviews = (req, res) => {
-  console.log('req.body: ', req.body);
-  console.log('req.params: ', req.params);
-  console.log('req.query', req.query);
   const shopId = req.params.id;
   const count = req.params.count || 9;
   const page = req.params.page || 0;
