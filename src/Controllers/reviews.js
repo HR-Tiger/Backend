@@ -135,9 +135,9 @@ const filterReviews = (req, res) => {
   const shopId = req.params.id;
   const count = req.params.count || 9;
   const page = req.params.page || 0;
-  const rating = req.body.rating || [1, 2, 3, 4, 5];
+  const rating = req.query.rating || [1, 2, 3, 4, 5];
   const ratingString = rating.join(',');
-  const category = req.body.category === null ? ['Drip Brew', 'Latte', 'Cappuccino', 'Americano', 'Espresso', 'Mocha', 'Tea', 'Iced Coffee', 'Cold Brew'] : req.body.category;
+  const category = req.query.category === null ? ['Drip Brew', 'Latte', 'Cappuccino', 'Americano', 'Espresso', 'Mocha', 'Tea', 'Iced Coffee', 'Cold Brew'] : req.body.category;
   for (let i = 0; i < category.length; i += 1) {
     category[i] = `'${category[i]}'`;
   }
