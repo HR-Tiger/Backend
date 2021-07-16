@@ -132,15 +132,21 @@ const addReview = async (req, res) => {
 };
 
 const filterReviews = (req, res) => {
+  console.log('req.body: ', req.body);
+  console.log('req.params: ', req.params);
+  console.log('req.query', req.query);
   const shopId = req.params.id;
   const count = req.params.count || 9;
   const page = req.params.page || 0;
   const rating = req.query.rating || [1, 2, 3, 4, 5];
-  const ratingString = rating.join(',');
-  const category = req.query.category === null ? ['Drip Brew', 'Latte', 'Cappuccino', 'Americano', 'Espresso', 'Mocha', 'Tea', 'Iced Coffee', 'Cold Brew'] : req.body.category;
+  const category = req.query.category === 'null' ? ['Drip Brew', 'Latte', 'Cappuccino', 'Americano', 'Espresso', 'Mocha', 'Tea', 'Iced Coffee', 'Cold Brew'] : req.query.category;
   for (let i = 0; i < category.length; i += 1) {
     category[i] = `'${category[i]}'`;
   }
+  for (let j = 0; j < rating.length; j += 1) {
+    rating[j] = Number(rating[j]);
+  }
+  const ratingString = rating.join(',');
   const category_string = category.join(', ');
 
   const sqlQuery = `
